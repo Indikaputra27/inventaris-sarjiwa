@@ -22,6 +22,32 @@ def generate_report(data, kategori_order):
     pdf.cell(0, 10, f"Tanggal Produksi: {tanggal}", ln=True)
     pdf.ln(5)
 
+    from fpdf import FPDF
+from datetime import datetime
+
+class PDF(FPDF):
+    def header(self):
+        self.set_font("Arial", "B", 14)
+        self.cell(0, 10, "Laporan Produksi Harian", ln=True, align="C")
+        self.ln(5)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", "I", 8)
+        self.cell(0, 10, f"Halaman {self.page_no()}", align="C")
+
+def generate_report(data, kategori_order):
+    pdf = PDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # Ambil tanggal dari data
+    tanggal = data[0]["Tanggal"] if data else datetime.today().date().isoformat()
+    pdf.cell(0, 10, f"Tanggal Produksi: {tanggal}", ln=True)
+    pdf.ln(5)
+
+    # Loop setiap kategori dan item
     for kategori in kategori_order:
         items = [item for item in data if item["Kategori"] == kategori]
         if items:
@@ -36,4 +62,9 @@ def generate_report(data, kategori_order):
                 pdf.cell(0, 10, f"- {nama}  |  Masuk: {masuk}  |  Keluar: {keluar}", ln=True)
             pdf.ln(3)
 
-    return bytes(pdf.output(dest="S"))
+    # --- Output sebagai bytes (untuk download/pdf export) ---
+    out = pdf.output(dest="S")
+    if isinstance(out, str):
+        out = out.encode("latin-1")
+    return out
+
