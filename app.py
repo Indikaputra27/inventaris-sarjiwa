@@ -35,12 +35,12 @@ with tab_input:
         with st.expander(kategori):
             sub = df[df["Kategori"] == kategori]
             for idx, row in sub.iterrows():
-                cols = st.columns([0.2, 0.4, 0.2, 0.2])
+                cols = st.columns([0.4, 0.3, 0.3])
                 cek = cols[0].checkbox(row["Nama"], key=f"cek{idx}")
 
                 if cek:
-                    masuk  = cols[2].number_input("Masuk",  min_value=0, step=1, key=f"in{idx}")
-                    keluar = cols[3].number_input("Keluar", min_value=0, step=1, key=f"out{idx}")
+                    masuk  = cols[1].number_input("Masuk",  min_value=0, step=1, key=f"in{idx}")
+                    keluar = cols[2].number_input("Keluar", min_value=0, step=1, key=f"out{idx}")
                     selected.append({
                         "Tanggal": today,
                         "Kategori": row["Kategori"],
