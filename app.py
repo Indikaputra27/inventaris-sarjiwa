@@ -1,10 +1,9 @@
 import streamlit as st
-st.set_page_config(page_title="Produksi Harian", layout="wide")  # ⬅️ HARUS DI ATAS
+st.set_page_config(page_title="Produksi Harian", layout="wide")
 
 import pandas as pd
 import os, json
 from datetime import date
-from io import BytesIO
 from utils_pdf import generate_report
 
 # ---------- PATH ----------
@@ -36,10 +35,8 @@ with tab_input:
         with st.expander(kategori):
             sub = df[df["Kategori"] == kategori]
             for idx, row in sub.iterrows():
-                cols = st.columns([0.07, 0.33, 0.3, 0.3])
-                cek = cols[0].checkbox("", key=f"cek{idx}")
-                cols[1].image(row["Image_URL"], width=110)
-                cols[1].write(row["Nama"])
+                cols = st.columns([0.2, 0.4, 0.2, 0.2])
+                cek = cols[0].checkbox(row["Nama"], key=f"cek{idx}")
 
                 if cek:
                     masuk  = cols[2].number_input("Masuk",  min_value=0, step=1, key=f"in{idx}")
@@ -60,15 +57,12 @@ with tab_input:
             fname_base = f"produksi_{today}"
             pdf_path   = os.path.join(LAPORAN_DIR, f"{fname_base}.pdf")
 
-            # Simpan PDF
             with open(pdf_path, "wb") as f:
                 f.write(pdf_bytes)
 
-            # Simpan versi JSON untuk histori
             with open(os.path.join(LAPORAN_DIR, f"{fname_base}.json"), "w") as j:
                 json.dump(selected, j)
 
-            # 🎉 Notifikasi dan tombol download
             st.balloons()
             st.success("✅ PDF berhasil dibuat dan disimpan!")
             st.info(f"📄 File disimpan di: `{pdf_path}`")
